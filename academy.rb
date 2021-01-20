@@ -37,10 +37,11 @@ end
 
 def send_email(content)
 
-API_KEY = ENV['MAILGUN_API_KEY']
-API_URL = "https://api:#{API_KEY}@api.mailgun.net/v2/<your-mailgun-domain>"
+api_key = ENV['MAILGUN_API_KEY']
 
-RestClient.post API_URL+"/messages",
+api_url = "https://api:#{api_key}@api.mailgun.net/v2/<your-mailgun-domain>"
+
+RestClient.post api_url+"/messages",
     :from => "blitherocher+heroku@gmail.com",
     :to => "blitherocher@gmail.com",
     :subject => "Stock update",
