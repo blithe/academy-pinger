@@ -1,9 +1,7 @@
 require 'json'
 require 'uri'
 require 'net/http'
-require 'sendgrid-ruby'
-include SendGrid
-
+require 'rest-client'
 
 def run
 	puts 'starting'
@@ -39,17 +37,15 @@ end
 
 def send_email(content)
 
-	from = Email.new(email: 'test@example.com')
-	subject = 'Hello World from the SendGrid Ruby Library!'
-	to = Email.new(email: 'blitherocher@gmail.com')
-	content = Content.new(type: 'text/plain', value: content)
-	mail = Mail.new(from, subject, to, content)
+API_KEY = ENV['MAILGUN_API_KEY']
+API_URL = "https://api:#{API_KEY}@api.mailgun.net/v2/<your-mailgun-domain>"
 
-	sg = SendGrid::API.new(user_name: ENV['SENDGRID_USERNAME'], password: ENV['SENDGRID_PASSWORD'])
-	response = sg.client.mail._('send').post(request_body: mail.to_json)
-	puts response.status_code
-	puts response.body
-	puts response.headers
+RestClient.post API_URL+"/messages",
+    :from => "blitherocher+heroku@gmail.com",
+    :to => "blitherocher@gmail.com",
+    :subject => "Stock update",
+    :text => content,
+    :html => content
 end
 
 send_email(run)
