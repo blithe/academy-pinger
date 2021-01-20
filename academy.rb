@@ -3,9 +3,7 @@ require 'uri'
 require 'net/http'
 require 'rest-client'
 
-def run
-	puts 'starting'
-
+def email_body
 	radius = 2500
 
 	uri = URI("https://www.academy.com/api/stores?lat=27.8005828&lon=-97.39638099999999&rad=#{radius}&bopisEnabledFlag=true&storeDetailsID=store-0197&skus=8056450:1")
@@ -14,7 +12,7 @@ def run
 
 	stores = info['stores']
 
-	puts "Found #{stores.count} stores"
+	output = "Found #{stores.count} stores"
 
 	stores.each do |store|
 		properties = store['properties']
@@ -26,27 +24,28 @@ def run
 		status = inventory['skus'].first['inventoryStatus']
 
 		next if status == 'OUT_OF_STOCK'
-			
-		puts "Store: (#{address} #{city}, #{state}) Status: #{status}"
-			
+
+		output << ("\nStore: (#{address} #{city}, #{state}) Status: #{status}")
 	end
 
-
-	puts 'done'
+	output
 end
 
 def send_email(content)
 
-api_key = ENV['MAILGUN_API_KEY']
+	api_key = ENV['MAILGUN_API_KEY']
+	domain = ENV['MAILGUN_DOMAIN']
+	api_url = "https://api:#{api_key}@api.mailgun.net/v2/#{domain}"
 
-api_url = "https://api:#{api_key}@api.mailgun.net/v2/<your-mailgun-domain>"
-
-RestClient.post api_url+"/messages",
-    :from => "blitherocher+heroku@gmail.com",
-    :to => "blitherocher@gmail.com",
-    :subject => "Stock update",
-    :text => content,
-    :html => content
+	RestClient.post api_url+"/messages",
+	    :from => "blitherocher+heroku@gmail.com",
+	    :to => "blitherocher@gmail.com",
+	    :subject => "Stock update",
+	    :text => content
 end
 
-send_email(run)
+puts 'starting'
+puts email_body
+
+send_email(email_body)
+puts 'done'
