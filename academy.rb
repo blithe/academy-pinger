@@ -19,13 +19,14 @@ def email_body
 		city = properties['city']
 		state = properties['state']
 		address = properties['streetAddress']
+		distance = properties['distance']
 
 		inventory = store['inventory']
 		status = inventory['skus'].first['inventoryStatus']
 
 		next if status == 'OUT_OF_STOCK'
 
-		output << ("\nStore: (#{address} #{city}, #{state}) Status: #{status}")
+		output << ("\nStore: (#{address} #{city}, #{state}) Distance: #{distance} miles")
 	end
 
 	output
