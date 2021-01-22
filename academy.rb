@@ -22,8 +22,10 @@ def email_body
 		distance = properties['distance']
 
 		inventory = store['inventory']
-		status = inventory['skus'].first['inventoryStatus']
+		skus = inventory['skus']
+		next if skus.nil?
 
+		status = skus.first['inventoryStatus']
 		next if status == 'OUT_OF_STOCK'
 
 		output << ("\nStore: (#{address} #{city}, #{state}) Distance: #{distance} miles")
