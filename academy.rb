@@ -2,6 +2,7 @@ require 'json'
 require 'uri'
 require 'net/http'
 require 'rest-client'
+require 'socket'
 
 def email_body
 	radius = 2500
@@ -13,6 +14,9 @@ def email_body
 	stores = info['stores']
 
 	output = "Found #{stores.count} stores"
+
+	ip = IPSocket.getaddress(Socket.gethostname)
+	output << "\nIP: #{ip}"
 
 	stores.each do |store|
 		properties = store['properties']
