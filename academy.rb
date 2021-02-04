@@ -5,7 +5,7 @@ require 'rest-client'
 require 'socket'
 
 def email_body
-	radius = 2500
+	radius = 500
 
 	uri = URI("https://www.academy.com/api/stores?lat=27.8005828&lon=-97.39638099999999&rad=#{radius}&bopisEnabledFlag=true&storeDetailsID=store-0197&skus=8056450:1")
 	response = Net::HTTP.get(uri)
