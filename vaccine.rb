@@ -5,25 +5,20 @@ require 'rest-client'
 require 'socket'
 require 'geocoder'
 
-def heb_results
-	radius = 500
+def ip_address
+	ip = IPSocket.getaddress(Socket.gethostname)
+	"IP: #{ip}"
+end
 
+def heb_results
 	uri = URI("https://heb-ecom-covid-vaccine.hebdigital-prd.com/vaccine_locations.json")
 	response = Net::HTTP.get(uri)
 	info = JSON.parse(response)
 
-
 	stores = info.dig('locations')
-
-
 	output = "Found #{stores.count} HEB stores"
 
-	ip = IPSocket.getaddress(Socket.gethostname)
-	output << "\nIP: #{ip}"
-
 	stores.each do |store|
-
-
 		city = store['city']
 		state = store['state']
 		address = store['street']
@@ -44,8 +39,6 @@ def heb_results
 end
 
 def cvs_results
-	radius = 500
-
 	uri = URI("https://www.cvs.com/immunizations/covid-19-vaccine.vaccine-status.TX.json?vaccineinfo")
 
 	response = Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
@@ -56,17 +49,11 @@ def cvs_results
 	end
 
 	info = JSON.parse(response.body)
-
 	stores = info.dig('responsePayloadData', 'data', 'TX')
 
 	output = "Found #{stores.count} CVS stores"
 
-	ip = IPSocket.getaddress(Socket.gethostname)
-	output << "\nIP: #{ip}"
-
 	stores.each do |store|
-
-	# require 'pry'; binding.pry
 		status = store['status']
 		next if status == 'Fully Booked'
 
@@ -92,6 +79,7 @@ def send_email(content)
 end
 
 puts 'starting'
+puts ip_address
 puts heb_results
 puts cvs_results
 
