@@ -65,6 +65,10 @@ def cvs_results
 	output
 end
 
+def email_body
+	[ip_address, heb_results, cvs_results].join("\n\n")
+end
+
 def send_email(content)
 
 	api_key = ENV['MAILGUN_API_KEY']
@@ -83,5 +87,5 @@ puts ip_address
 puts heb_results
 puts cvs_results
 
-# send_email(heb_results)
+send_email(email_body)
 puts 'done'
