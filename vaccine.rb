@@ -65,8 +65,28 @@ def cvs_results
 	output
 end
 
+def walgreens_results
+	uri = URI("https://www.walgreens.com/hcschedulersvc/svc/v1/immunizationLocations/availability")
+
+	response = Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
+		request = Net::HTTP::Post.new uri
+		request["Content-Type"] = 'application/json'
+
+		data = {position: {latitude:30.5119, longitude:-97.8178},
+				appointmentAvailability: {startDateTime: Time.now.strftime("%Y-%m-%d")}}
+		request.body = data.to_json
+
+		http.request request # Net::HTTPResponse object
+	end
+
+	info = JSON.parse(response.body)
+	status = info.dig('appointmentsAvailable')
+
+	"Walgreens availabile? #{status}"
+end
+
 def email_body
-	[ip_address, heb_results, cvs_results].join("\n\n")
+	[ip_address, heb_results, cvs_results, walgreens_results].join("\n\n")
 end
 
 def send_email(content)
@@ -86,6 +106,7 @@ puts 'starting'
 puts ip_address
 puts heb_results
 puts cvs_results
+puts walgreens_results
 
 send_email(email_body)
 puts 'done'
